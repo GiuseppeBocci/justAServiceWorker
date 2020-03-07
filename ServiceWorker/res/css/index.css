@@ -1,0 +1,29 @@
+body{
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+h1{
+  align-content: center;
+  align-items: center;
+}
+
+p{
+  font-family: Chakra Petch;
+}
+
+h3{
+  font-family: Oxanium;
+  color: blue;
+}
+
+#pianeti{
+  width: 30rem;
+  height: 5rem;
+}
+
+img{
+  height: 10rem;
+  width: 10rem;
+}

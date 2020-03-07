@@ -1,0 +1,8 @@
+{
+	"short_name": "PROVA App",
+	"name": "PROVAApp",
+	"start_url": "index.html",
+	"background_color": "#f1c40e",
+	"display": "standalone",
+	"theme_color": "#f1c40e"
+}
