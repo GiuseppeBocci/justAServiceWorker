@@ -5,7 +5,8 @@ var config = {
   version: 0,
   // Risorse da inserire in cache immediatamente - Precaching
   staticCacheItems: [
-    '/'
+    '/',
+    'index.html'
   ],
 };
 
@@ -50,34 +51,29 @@ event.waitUntil(
 // Evento fetch
 self.addEventListener('fetch', event => {
   console.log("Richiesta URL: "+event.request.url);
-     event.respondWith(
-       //provo a fare il fetch della richiesta
-       fetch(event.request).then(response => {
-         //controllo se lo stato della rispota è regolare (200)
-         var r1 = response.clone();
-         var r2 = response.clone();
-          if(r1.status == 200){
-            //se lo è:
-            //1) aggiorno la cache
-            caches.open(cacheName('attuale', config)).then(cache => {
-              cache.put(event.request, r2);
-            });
-            //2) faccio il return della rispota
-            return response;
-          }
-          else{
-            //se non lo è provo a vedere se ho un match nella mia cache
-            console.log("chache match:", caches.match(event.request));
-            return caches.open(cacheName('attuale', config)).then(cache => {
-              var cr= cache.match(event.request);
-              console.log("cache.match:",cr);
-              return cr;
-            });
-          }
-        }).catch(error => {
-          //se lo stato della rispota non è 200 e non ho avuto nessun mach nella cache
-          //allora genero un errore
-          console.error("Errore nel fetch:", error);
-        })
+  event.respondWith(
+    //provo a fare il fetch della richiesta
+    fetch(event.request).then(response => {
+      //se va a bun fine:
+      //1) faccio il caching della request
+      var r1 = response.clone();
+      caches.open(cacheName('attuale', config)).then(cache => {
+        cache.put(event.request, r1);
+      });
+      //2) la Promise va a fullfill con il return della response
+      return response;
+    }).catch(() => {
+      //se il fatch ha fallito la Promise sarà Pending
+      //provo a fare un match nella mia cache
+      return caches.open(cacheName('attuale', config)).then(cache => {
+        var cr= cache.match(event.request);
+        console.log("cache.match:",cr);
+        return cr;
+      }).catch( error => {
+        //se il match nella cache fallisce genererà un errore e la Promise sarà rejected
+        console.error("Fatch error:",error);
+        error.reject();
+      });
+      })
      );
  });
